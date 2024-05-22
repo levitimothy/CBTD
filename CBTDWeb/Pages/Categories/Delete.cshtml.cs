@@ -1,4 +1,5 @@
 using DataAccess;
+using Infrastructure.Interfaces;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,13 +8,13 @@ namespace CBTDWeb.Pages.Categories
 {
     public class DeleteModel : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly UnitOfWork _unitOfWork;
         [BindProperty]  //synchronizes form fields with values in code behind
         public Category objCategory { get; set; }
 
-        public DeleteModel(ApplicationDbContext db)  //dependency injection
+        public DeleteModel(UnitOfWork unitOfWork)  //dependency injection
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult OnGet(int? id)
@@ -23,7 +24,7 @@ namespace CBTDWeb.Pages.Categories
             //am I in edit mode?
             if (id != 0)
             {
-                objCategory = _db.Categories.Find(id);
+                objCategory = _unitOfWork.Category.GetById(id);
             }
 
             if (objCategory == null)  //nothing found in DB
@@ -42,9 +43,9 @@ namespace CBTDWeb.Pages.Categories
                 return Page();
             }
 
-            _db.Categories.Remove(objCategory);  //Removes from memory
+            _unitOfWork.Category.Delete(objCategory);  //Removes from memory
             TempData["success"] = "Category Deleted Successfully";
-            _db.SaveChanges();   //saves to DB
+            _unitOfWork.Commit();   //saves to DB
 
             return RedirectToPage("./Index");
         }

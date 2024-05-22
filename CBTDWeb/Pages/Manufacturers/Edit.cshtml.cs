@@ -1,4 +1,5 @@
 using DataAccess;
+using Infrastructure.Interfaces;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,13 +8,13 @@ namespace CBTDWeb.Pages.Manufacturers
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly UnitOfWork _unitOfWork;
         [BindProperty]  //synchronizes form fields with values in code behind
         public Manufacturer objManufacturer { get; set; }
 
-        public EditModel(ApplicationDbContext db)  //dependency injection
+        public EditModel(UnitOfWork unitOfWork)  //dependency injection
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult OnGet(int? id)
@@ -23,7 +24,7 @@ namespace CBTDWeb.Pages.Manufacturers
             //am I in edit mode?
             if (id != 0)
             {
-                objManufacturer = _db.Manufacturers.Find(id);
+                objManufacturer = _unitOfWork.Manufacturer.GetById(id);
             }
 
             if (objManufacturer == null)  //nothing found in DB
@@ -45,16 +46,16 @@ namespace CBTDWeb.Pages.Manufacturers
             //if this is a new category
             if (objManufacturer.Id == 0)
             {
-                _db.Manufacturers.Add(objManufacturer);
+                _unitOfWork.Manufacturer.Add(objManufacturer);
                 TempData["success"] = "Manufacturer added Successfully";
             }
             //if category exists
             else
             {
-                _db.Manufacturers.Update(objManufacturer);
+                _unitOfWork.Manufacturer.Update(objManufacturer);
                 TempData["success"] = "Manufacturer updated Successfully";
             }
-            _db.SaveChanges();
+            _unitOfWork.Commit();
 
             return RedirectToPage("./Index");
         }
