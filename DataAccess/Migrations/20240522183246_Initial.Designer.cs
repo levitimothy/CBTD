@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240522175910_AddedProductModel")]
-    partial class AddedProductModel
+    [Migration("20240522183246_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,12 +89,17 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Coors"
+                            Name = "The Casella Family"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Food Club"
+                            Name = "Trinchero Family Estates"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Frito Lay"
                         });
                 });
 
@@ -150,6 +155,83 @@ namespace DataAccess.Migrations
                     b.HasIndex("ManufacturerId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Description = "The primary taste of Coca-Cola is thought to come from vanilla and cinnamon, with trace amounts of essential oils, and spices such as nutmeg.",
+                            DozenPrice = 0.98999999999999999,
+                            HalfDozenPrice = 1.24,
+                            ImageUrl = "/images/products/Coke.jpg",
+                            ListPrice = 1.99,
+                            ManufacturerId = 1,
+                            Name = "Coca Cola Classic",
+                            Size = "33cl",
+                            UPC = "4894034",
+                            UnitPrice = 1.49
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 2,
+                            Description = "<p>The Yellow Tail Shiraz has a deep red color with bright purple hues, characteristic of fine young wines. It displays impressive <strong>spice, licorice, and black currant aromas</strong>. The palate is perfectly balanced with soft tannins and fine French Oak, further complemented by ripe fruit flavors.</p>",
+                            DozenPrice = 6.9900000000000002,
+                            HalfDozenPrice = 7.9900000000000002,
+                            ImageUrl = "/images/products/YellowTail.png",
+                            ListPrice = 9.9900000000000002,
+                            ManufacturerId = 2,
+                            Name = "Yellow Tail Shiraz",
+                            Size = "750 ml",
+                            UPC = "031259008943",
+                            UnitPrice = 8.9900000000000002
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 2,
+                            Description = "Menage a Trois California Red Blend exposes the fresh, ripe, jam-like fruit that is the calling card of California wine. Forward, spicy and soft, this delicious dalliance makes the perfect accompaniment for grilled meats or chicken.",
+                            DozenPrice = 9.9900000000000002,
+                            HalfDozenPrice = 10.75,
+                            ImageUrl = "/images/products/menage.jpg",
+                            ListPrice = 12.99,
+                            ManufacturerId = 3,
+                            Name = "Menage a Trois Merlot",
+                            Size = "750 ml",
+                            UPC = "099988071096",
+                            UnitPrice = 11.49
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 3,
+                            Description = "The chip that packs a flavorful punch with the classic crunch. Boldly seasoned with three cheeses, tomatoes, onions, and a savory blend of spices. Indulge yourself or share with large gatherings",
+                            DozenPrice = 0.68999999999999995,
+                            HalfDozenPrice = 1.05,
+                            ImageUrl = "/images/products/doritos.jpg",
+                            ListPrice = 1.99,
+                            ManufacturerId = 4,
+                            Name = "Doritos",
+                            Size = "175 grams",
+                            UPC = "028400443753",
+                            UnitPrice = 1.49
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 3,
+                            Description = "The fun, crunchy snack that is made with real cheese. Packed with flavor that satisfies. Always a crowd favorite.",
+                            DozenPrice = 0.68999999999999995,
+                            HalfDozenPrice = 1.05,
+                            ImageUrl = "/images/products/cheetos.jpg",
+                            ListPrice = 1.99,
+                            ManufacturerId = 4,
+                            Name = "Cheetos",
+                            Size = "200 grams",
+                            UPC = "028400443661",
+                            UnitPrice = 1.49
+                        });
                 });
 
             modelBuilder.Entity("Infrastructure.Models.Product", b =>
