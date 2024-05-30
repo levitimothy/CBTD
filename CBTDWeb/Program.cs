@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.DbInitializer;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +13,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped<DbInitializer>();
+
+
 
 
 
 
 
 var app = builder.Build();
+
+SeedDatabase();
+void SeedDatabase()
+{
+	using var scope = app.Services.CreateScope();
+	var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+	dbInitializer.Initialize();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
