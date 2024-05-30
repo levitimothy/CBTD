@@ -35,112 +35,65 @@ namespace DataAccess
 
         public virtual T Get(Expression<Func<T, bool>> predicate, bool trackChanges = false, string? includes = null)
         {
-            if (includes == null)
+            IQueryable<T> queryable = _dbContext.Set<T>();
+            if (!string.IsNullOrEmpty(includes)) // If other objects to include (join)
             {
-                if (!trackChanges == null)
-                {
-                    return _dbContext.Set<T>().Where(predicate).AsNoTracking().FirstOrDefault();
-                }
-                else
-                {
-                    return _dbContext.Set<T>().Where(predicate).FirstOrDefault();
-                }
-            }
-            else
-            {
-                IQueryable<T> queryable = _dbContext.Set<T>();
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     queryable = queryable.Include(includeProperty);
                 }
-                if (!trackChanges == null)
-                {
-                    return _dbContext.Set<T>().Where(predicate).AsNoTracking().FirstOrDefault();
-                }
-                else
-                {
-                    return _dbContext.Set<T>().Where(predicate).FirstOrDefault();
-                }
             }
+            if (!trackChanges) // If we do not want EF tracking changes
+            {
+                queryable = queryable.AsNoTracking();
+            }
+            return queryable.FirstOrDefault(predicate);
         }
 
-        public virtual IEnumerable<T> GetAll(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
+
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
         {
             IQueryable<T> queryable = _dbContext.Set<T>();
-            if (predicate != null && includes == null)
+            if (!string.IsNullOrEmpty(includes))
             {
-                return _dbContext.Set<T>().Where(predicate).AsEnumerable();
-            }
-            else if (includes != null)
-            {
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     queryable = queryable.Include(includeProperty);
                 }
             }
-
-            if (predicate == null)
+            if (predicate != null)
             {
-                if (orderBy == null)
-                {
-                    return queryable.AsEnumerable();
-                }
-                else
-                {
-                    return queryable.OrderBy(orderBy).ToList();
-                }
+                queryable = queryable.Where(predicate);
             }
-            else
+            if (orderBy != null)
             {
-                if (orderBy == null)
-                {
-                    return queryable.Where(predicate).ToList();
-                } 
-                else
-                {
-                    return queryable.Where(predicate).OrderBy(orderBy).ToList();
-                }
+                queryable = queryable.OrderBy(orderBy);
             }
+            return queryable.ToList();
         }
+
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
         {
             IQueryable<T> queryable = _dbContext.Set<T>();
-            if (predicate != null && includes == null)
+            if (!string.IsNullOrEmpty(includes))
             {
-                return _dbContext.Set<T>().Where(predicate).AsEnumerable();
-            }
-            else if (includes != null)
-            {
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     queryable = queryable.Include(includeProperty);
                 }
             }
-
-            if (predicate == null)
+            if (predicate != null)
             {
-                if (orderBy == null)
-                {
-                    return queryable.AsEnumerable();
-                }
-                else
-                {
-                    return queryable.OrderBy(orderBy).ToList();
-                }
+                queryable = queryable.Where(predicate);
             }
-            else
+            if (orderBy != null)
             {
-                if (orderBy == null)
-                {
-                    return await queryable.Where(predicate).ToListAsync();
-                }
-                else
-                {
-                    return await queryable.Where(predicate).OrderBy(orderBy).ToListAsync();
-                }
+                queryable = queryable.OrderBy(orderBy);
             }
+            return await queryable.ToListAsync();
         }
+
 
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate, bool trackChanges = false, string? includes = null)
         {
