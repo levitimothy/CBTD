@@ -33,7 +33,7 @@ namespace DataAccess
             _dbContext.Set<T>().RemoveRange(entities);
         }
 
-        public virtual T Get(Expression<Func<T, bool>>? predicate, bool trackChanges = false, string? includes = null)
+        public virtual T Get(Expression<Func<T, bool>> predicate, bool trackChanges = false, string? includes = null)
         {
             if (includes == null)
             {
@@ -181,8 +181,8 @@ namespace DataAccess
         public void Update(T entity)
         {
             //for track change im flagging modified to the system
+            _dbContext.ChangeTracker.Clear();
             _dbContext.Entry(entity).State = EntityState.Modified;
-            
         }
     }
 }
