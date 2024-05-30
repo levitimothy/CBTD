@@ -100,7 +100,7 @@ namespace CBTDWeb.Pages.Products
                 }
 
                 // Add the new product to the database
-                //_unitOfWork.Product.Add(objProduct);
+                _unitOfWork.Product.Add(objProduct);
             }
             else
             {
