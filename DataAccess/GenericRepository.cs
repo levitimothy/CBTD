@@ -33,114 +33,67 @@ namespace DataAccess
             _dbContext.Set<T>().RemoveRange(entities);
         }
 
-        public virtual T Get(Expression<Func<T, bool>>? predicate, bool trackChanges = false, string? includes = null)
-        {
-            if (includes == null)
-            {
-                if (!trackChanges == null)
-                {
-                    return _dbContext.Set<T>().Where(predicate).AsNoTracking().FirstOrDefault();
-                }
-                else
-                {
-                    return _dbContext.Set<T>().Where(predicate).FirstOrDefault();
-                }
-            }
-            else
-            {
-                IQueryable<T> queryable = _dbContext.Set<T>();
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    queryable = queryable.Include(includeProperty);
-                }
-                if (!trackChanges == null)
-                {
-                    return _dbContext.Set<T>().Where(predicate).AsNoTracking().FirstOrDefault();
-                }
-                else
-                {
-                    return _dbContext.Set<T>().Where(predicate).FirstOrDefault();
-                }
-            }
-        }
-
-        public virtual IEnumerable<T> GetAll(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
+        public virtual T Get(Expression<Func<T, bool>> predicate, bool trackChanges = false, string? includes = null)
         {
             IQueryable<T> queryable = _dbContext.Set<T>();
-            if (predicate != null && includes == null)
+            if (!string.IsNullOrEmpty(includes)) // If other objects to include (join)
             {
-                return _dbContext.Set<T>().Where(predicate).AsEnumerable();
-            }
-            else if (includes != null)
-            {
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     queryable = queryable.Include(includeProperty);
                 }
             }
-
-            if (predicate == null)
+            if (!trackChanges) // If we do not want EF tracking changes
             {
-                if (orderBy == null)
-                {
-                    return queryable.AsEnumerable();
-                }
-                else
-                {
-                    return queryable.OrderBy(orderBy).ToList();
-                }
+                queryable = queryable.AsNoTracking();
             }
-            else
-            {
-                if (orderBy == null)
-                {
-                    return queryable.Where(predicate).ToList();
-                } 
-                else
-                {
-                    return queryable.Where(predicate).OrderBy(orderBy).ToList();
-                }
-            }
+            return queryable.FirstOrDefault(predicate);
         }
+
+
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
+        {
+            IQueryable<T> queryable = _dbContext.Set<T>();
+            if (!string.IsNullOrEmpty(includes))
+            {
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    queryable = queryable.Include(includeProperty);
+                }
+            }
+            if (predicate != null)
+            {
+                queryable = queryable.Where(predicate);
+            }
+            if (orderBy != null)
+            {
+                queryable = queryable.OrderBy(orderBy);
+            }
+            return queryable.ToList();
+        }
+
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, int>>? orderBy = null, string? includes = null)
         {
             IQueryable<T> queryable = _dbContext.Set<T>();
-            if (predicate != null && includes == null)
+            if (!string.IsNullOrEmpty(includes))
             {
-                return _dbContext.Set<T>().Where(predicate).AsEnumerable();
-            }
-            else if (includes != null)
-            {
-                foreach (var includeProperty in includes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     queryable = queryable.Include(includeProperty);
                 }
             }
-
-            if (predicate == null)
+            if (predicate != null)
             {
-                if (orderBy == null)
-                {
-                    return queryable.AsEnumerable();
-                }
-                else
-                {
-                    return queryable.OrderBy(orderBy).ToList();
-                }
+                queryable = queryable.Where(predicate);
             }
-            else
+            if (orderBy != null)
             {
-                if (orderBy == null)
-                {
-                    return await queryable.Where(predicate).ToListAsync();
-                }
-                else
-                {
-                    return await queryable.Where(predicate).OrderBy(orderBy).ToListAsync();
-                }
+                queryable = queryable.OrderBy(orderBy);
             }
+            return await queryable.ToListAsync();
         }
+
 
         public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate, bool trackChanges = false, string? includes = null)
         {
@@ -181,8 +134,8 @@ namespace DataAccess
         public void Update(T entity)
         {
             //for track change im flagging modified to the system
+            _dbContext.ChangeTracker.Clear();
             _dbContext.Entry(entity).State = EntityState.Modified;
-            
         }
     }
 }
