@@ -12,7 +12,8 @@ namespace Infrastructure.Interfaces
         public IGenericRepository<Category> Category {  get; }
         public IGenericRepository<Manufacturer> Manufacturer { get; }
         public IGenericRepository<Product> Product { get; }
-        int Commit();
+		//public IGenericRepository<ApplicationUser> ApplicationUser { get; }
+		int Commit();
         Task<int> CommitAsync();
     }
 }

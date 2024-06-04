@@ -1,25 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Infrastructure.Models;
+﻿using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
-    public class ApplicationDbContext : DbContext
-    {
+	public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+	{
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<Product> Products { get; set; }
+		public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
 
-        //inserting seed data when Model is physically created in the DB the first time
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		//inserting seed data when Model is physically created in the DB the first time
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Non-Alcoholic Beverages", DisplayOrder = 1 },
