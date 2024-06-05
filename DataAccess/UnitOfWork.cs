@@ -21,7 +21,9 @@ namespace DataAccess
 
         public IGenericRepository<Product> _Product;
 
-        public IGenericRepository<Category> Category
+		public IGenericRepository<ApplicationUser> _ApplicationUser;
+
+		public IGenericRepository<Category> Category
         {
             get
             {
@@ -54,6 +56,17 @@ namespace DataAccess
                 return _Product;
             }
         }
+  //      public IGenericRepository<ApplicationUser> ApplicationUser
+		//{
+  //          get
+  //          {
+  //              if (_ApplicationUser == null)
+  //              {
+		//			_ApplicationUser = new GenericRepository<ApplicationUser>(_dbContext);
+  //              }
+  //              return _ApplicationUser;
+  //          }
+  //      }
 
         public int Commit()
         {

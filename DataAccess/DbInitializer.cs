@@ -1,25 +1,32 @@
 ﻿using Infrastructure.Interfaces;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utility;
 
 namespace DataAccess.DbInitializer
 {
 	public class DbInitializer : IDbInitializer
 	{
-		private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-		public DbInitializer(ApplicationDbContext db)
-		{
-			_db = db;
-		}
+        public DbInitializer(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            _db = db;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
 
 
-		public void Initialize()
+
+        public void Initialize()
 		{
 			_db.Database.EnsureCreated();
 
@@ -41,7 +48,34 @@ namespace DataAccess.DbInitializer
 				return; //DB has been seeded
 			}
 
-			var Categories = new List<Category>
+            //create roles if they are not created
+            //SD is a “Static Details” class we will create in Utility to hold constant strings for Roles
+
+            _roleManager.CreateAsync(new IdentityRole(SD.AdminRole)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.ShipperRole)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.CustomerRole)).GetAwaiter().GetResult();
+
+            //Create at least one "Super Admin" or “Admin”.  Repeat the process for other users you want to seed
+
+            _userManager.CreateAsync(new ApplicationUser
+            {
+                UserName = "levisat32@gmail.com",
+                Email = "levisat32@gmail.com",
+                FirstName = "Levi",
+                LastName = "Timothy",
+                PhoneNumber = "3853178188",
+                StreetAddress = "123 Main Street",
+                State = "UT",
+                PostalCode = "84050",
+                City = "Morgan"
+            }, "Password123!").GetAwaiter().GetResult();
+
+            ApplicationUser user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == "levisat32@gmail.com");
+
+            _userManager.AddToRoleAsync(user, SD.AdminRole).GetAwaiter().GetResult();
+
+
+            var Categories = new List<Category>
 			{
 
 			new Category { Name = "Non-Alcoholic Beverages", DisplayOrder = 1 },
