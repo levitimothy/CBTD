@@ -1,7 +1,9 @@
 using DataAccess;
 using DataAccess.DbInitializer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
-
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<DbInitializer>();
