@@ -2,7 +2,7 @@
 @model CBTDWeb.Pages.Products.UpsertModel
 @{
 }
-<form method="post" onsubmit="return ValidateInput()" asp-action="Upsert" enctype="multipart/form-data">
+<form method="post" onsubmit="return ValidateInput()" enctype="multipart/form-data">
     <!--Hide these if we are in edit mode, so they are sent back with the post,
          since we are using BindProperty on backend - we need ALL fields-->
     <input asp-for="objProduct.Id" hidden />
