@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Infrastructure.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -43,5 +44,9 @@ namespace Infrastructure.Interfaces
         void Delete(IEnumerable<T> entities);
         //update changes to an object
         void Update(T entity);
+
+        // Increment and Decrement Shopping Cart
+        int IncrementCount(ShoppingCart shoppingCart, int count);
+        int DecrementCount(ShoppingCart shoppingCart, int count);
     }
 }
