@@ -25,6 +25,13 @@ namespace DataAccess
 
 		public IGenericRepository<ShoppingCart> _ShoppingCart;
 
+        public IOrderHeaderRepository<OrderHeader> _OrderHeader;
+
+        public IGenericRepository<OrderDetails> _OrderDetails;
+        
+		
+
+
 		public IGenericRepository<Category> Category
         {
             get
@@ -78,6 +85,28 @@ namespace DataAccess
                     _ShoppingCart = new GenericRepository<ShoppingCart>(_dbContext);
                 }
                 return _ShoppingCart;
+            }
+        }
+        public IOrderHeaderRepository<OrderHeader> OrderHeader
+        {
+            get
+            {
+                if (_OrderHeader == null)
+                {
+                    _OrderHeader = new OrderHeaderRepository(_dbContext);
+                }
+                return _OrderHeader;
+            }
+        }
+        public IGenericRepository<OrderDetails> OrderDetails
+        {
+            get
+            {
+                if (_OrderDetails == null)
+                {
+                    _OrderDetails = new GenericRepository<OrderDetails>(_dbContext);
+                }
+                return _OrderDetails;
             }
         }
 
